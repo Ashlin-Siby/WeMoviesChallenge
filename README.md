@@ -1,4 +1,4 @@
-# prac
+# WeMovies Challege
 
 A new Flutter project.
 

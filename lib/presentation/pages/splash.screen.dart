@@ -23,19 +23,25 @@ class _SplashScreenState extends State<SplashScreen> {
     Position? userLocation =
         await _determinePosition().onError((error, stackTrace) => null);
     UserAddressModel? userAddress;
-    if (userLocation != null) {
-      Placemark placemark = (await placemarkFromCoordinates(
-          userLocation.latitude, userLocation.longitude))[0];
-      String mainAdress =
-          (placemark.street ?? placemark.name ?? placemark.country) ?? '';
-      String secondaryAddress =
-          ("${((placemark.thoroughfare?.isEmpty ?? true) ? placemark.subThoroughfare : placemark.thoroughfare)!}, ${((placemark.subLocality?.isEmpty ?? true) ? placemark.locality : placemark.subLocality)!}");
-      if (mainAdress.isNotEmpty && secondaryAddress.isNotEmpty) {
-        userAddress = UserAddressModel(mainAdress, secondaryAddress);
+    try {
+      if (userLocation != null) {
+        Placemark placemark = (await placemarkFromCoordinates(
+            userLocation.latitude, userLocation.longitude))[0];
+        String mainAdress =
+            (placemark.street ?? placemark.name ?? placemark.country) ?? '';
+        String secondaryAddress =
+            ("${((placemark.thoroughfare?.isEmpty ?? true) ? placemark.subThoroughfare : placemark.thoroughfare)!}, ${((placemark.subLocality?.isEmpty ?? true) ? placemark.locality : placemark.subLocality)!}");
+        if (mainAdress.isNotEmpty && secondaryAddress.isNotEmpty) {
+          userAddress = UserAddressModel(mainAdress, secondaryAddress);
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
       }
     }
     userAddress ??= UserAddressModel("Unknown", "Unable to fetch location");
-    // ignore: use_build_context_synchronously
+// ignore: use_build_context_synchronously
     Navigator.pushReplacementNamed(context, '/dashboard',
         arguments: userAddress);
   }
